@@ -4,11 +4,9 @@ from typing import List
 
 app = FastAPI()
 
-# 1. Memoria temporal (si la máquina se apaga se pierden los datos) 
 alumnos_db = []
 profesores_db = []
 
-# 2. Modelos con validaciones (Validar por vacío y por tipo de dato correcto) 
 class Alumno(BaseModel):
     id: int
     nombres: str = Field(..., min_length=1)
@@ -23,24 +21,17 @@ class Profesor(BaseModel):
     apellidos: str = Field(..., min_length=1)
     horas_Clase: int
 
-# ==========================================
-# ENDPOINTS DE ALUMNOS [cite: 10]
-# ==========================================
-
-# GET /alumnos [cite: 11]
 @app.get("/alumnos", response_model=List[Alumno], status_code=status.HTTP_200_OK)
 def obtener_alumnos():
     return alumnos_db
 
-# GET /alumnos/{id} [cite: 13]
 @app.get("/alumnos/{id}", response_model=Alumno, status_code=status.HTTP_200_OK)
 def obtener_alumno_por_id(id: int):
     for a in alumnos_db:
         if a.id == id:
             return a
-    raise HTTPException(status_code=404, detail="Alumno no encontrado") # Uso de código 404 [cite: 24]
+    raise HTTPException(status_code=404, detail="Alumno no encontrado")
 
-# POST /alumnos [cite: 14]
 @app.post("/alumnos", response_model=Alumno, status_code=status.HTTP_201_CREATED)
 def crear_alumno(alumno: Alumno):
     for a in alumnos_db:
@@ -49,7 +40,6 @@ def crear_alumno(alumno: Alumno):
     alumnos_db.append(alumno)
     return alumno
 
-# PUT /alumnos/{id} [cite: 15]
 @app.put("/alumnos/{id}", response_model=Alumno, status_code=status.HTTP_200_OK)
 def actualizar_alumno(id: int, alumno_actualizado: Alumno):
     for i, a in enumerate(alumnos_db):
@@ -58,7 +48,6 @@ def actualizar_alumno(id: int, alumno_actualizado: Alumno):
             return alumno_actualizado
     raise HTTPException(status_code=404, detail="Alumno no encontrado")
 
-# DELETE /alumnos/{id} [cite: 16]
 @app.delete("/alumnos/{id}", status_code=status.HTTP_200_OK)
 def eliminar_alumno(id: int):
     for i, a in enumerate(alumnos_db):
@@ -67,17 +56,10 @@ def eliminar_alumno(id: int):
             return {"mensaje": "Alumno eliminado exitosamente"}
     raise HTTPException(status_code=404, detail="Alumno no encontrado")
 
-# ==========================================
-# ENDPOINTS DE PROFESORES [cite: 17]
-# (Misma lógica, aplicados al arreglo de profesores_db)
-# ==========================================
-
-# GET /profesores [cite: 18]
 @app.get("/profesores", response_model=List[Profesor], status_code=status.HTTP_200_OK)
 def obtener_profesores():
     return profesores_db
 
-# GET /profesores/{id} [cite: 19]
 @app.get("/profesores/{id}", response_model=Profesor, status_code=status.HTTP_200_OK)
 def obtener_profesor_por_id(id: int):
     for p in profesores_db:
@@ -85,7 +67,6 @@ def obtener_profesor_por_id(id: int):
             return p
     raise HTTPException(status_code=404, detail="Profesor no encontrado")
 
-# POST /profesores [cite: 20]
 @app.post("/profesores", response_model=Profesor, status_code=status.HTTP_201_CREATED)
 def crear_profesor(profesor: Profesor):
     for p in profesores_db:
@@ -94,7 +75,6 @@ def crear_profesor(profesor: Profesor):
     profesores_db.append(profesor)
     return profesor
 
-# PUT /profesores/{id} [cite: 21]
 @app.put("/profesores/{id}", response_model=Profesor, status_code=status.HTTP_200_OK)
 def actualizar_profesor(id: int, profesor_actualizado: Profesor):
     for i, p in enumerate(profesores_db):
@@ -103,7 +83,6 @@ def actualizar_profesor(id: int, profesor_actualizado: Profesor):
             return profesor_actualizado
     raise HTTPException(status_code=404, detail="Profesor no encontrado")
 
-# DELETE /profesores/{id} [cite: 22]
 @app.delete("/profesores/{id}", status_code=status.HTTP_200_OK)
 def eliminar_profesor(id: int):
     for i, p in enumerate(profesores_db):
