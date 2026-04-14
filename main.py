@@ -1,8 +1,17 @@
-from fastapi import FastAPI, HTTPException, status
+from fastapi import FastAPI, HTTPException, status, Request
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 from typing import List
 
 app = FastAPI()
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    return JSONResponse(
+        status_code=status.HTTP_400_BAD_REQUEST,
+        content={"detail": "Error de validación en los campos enviados"}
+    )
 
 alumnos_db = []
 profesores_db = []
@@ -16,10 +25,11 @@ class Alumno(BaseModel):
 
 class Profesor(BaseModel):
     id: int
-    numero_Empleado: int
+    numeroEmpleado: int
     nombres: str = Field(..., min_length=1)
     apellidos: str = Field(..., min_length=1)
-    horas_Clase: int
+    horasClase: int
+
 
 @app.get("/alumnos", response_model=List[Alumno], status_code=status.HTTP_200_OK)
 def obtener_alumnos():
